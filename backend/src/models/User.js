@@ -1,0 +1,85 @@
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema({
+  username:{
+    type:String,
+    required:true,
+    unique:true,
+    trim:true,
+    lowercase: true,
+  },
+  email:{
+    type:String,
+    required:true,
+    unique:true,
+    trim:true,
+    lowercase: true,
+  },
+  password:{
+    type:String,
+    required:true
+  },
+  name:{
+    type:String,
+    trim:true,
+  },
+  bio:{
+    type:String,
+    default: "",
+    trim:true,
+    maxlength: 150,
+  },
+  profilePicture: {
+  url: {
+    type: String,
+    default: "",
+  },
+  publicId: {            // to delete the old  image from cloduinart (cloudinary.uploader.destroy(publicId))
+    type: String,
+    default: "",
+  },
+},
+  followers:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }
+  ],
+  following:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }
+  ],
+  posts:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    }
+  ],
+  bookmarks:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    }
+  ],
+  blocked:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }
+  ],
+  comments:[{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comments",
+    }],
+  
+},
+ {
+  timestamps: true
+} 
+);
+
+const User = mongoose.model("User", userSchema);
+
+export default User;

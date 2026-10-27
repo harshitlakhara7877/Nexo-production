@@ -1,0 +1,144 @@
+import bcrypt from "bcrypt";
+import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+
+
+export const register = async (req, res) => {
+  try {
+    const { username, email, password, } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        message: "All field are required",
+        success: false
+      })
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUsername = username.trim();
+
+    const ExistingUser = await User.findOne({
+      $or: [{ email:normalizedEmail }, { username:normalizedUsername }],
+    });
+
+    if (ExistingUser) {
+      return res.status(400).json({
+        message: "User already exist",
+        success: false
+      })
+    }
+
+    
+
+    const hashedPassword = await bcrypt.hash(password, 13);
+
+    const user = await User.create({
+      username:normalizedUsername,
+      email:normalizedEmail,
+      password: hashedPassword,
+    })
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({
+      message: "Account created successfully",
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+      }
+    });
+
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+  }
+}
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const identifier = (email || req.body.username || "").trim();
+
+    if (!identifier || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+        success: false,
+      });
+    }
+
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { username: identifier },
+      ],
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+        success: false,
+      });
+    }
+
+    const passwordMatches = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatches) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+        success: false,
+      });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      message: "Login successfull",
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+      }
+    });
+
+  } catch (error) {
+    console.log(error.message);
+
+    return res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+  }
+}
+
+export const logout = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+
+  res.json({
+    success: true,
+    message: "Logged out successfully"
+  })
+}
