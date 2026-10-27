@@ -1,0 +1,41 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/socket.io/:path*",
+      "destination": "https://nexo-production-api.vercel.app/socket.io/:path*"
+    },
+    {
+      "source": "/auth/:path*",
+      "destination": "https://nexo-production-api.vercel.app/auth/:path*"
+    },
+    {
+      "source": "/user/:path*",
+      "destination": "https://nexo-production-api.vercel.app/user/:path*"
+    },
+    {
+      "source": "/message/:path*",
+      "destination": "https://nexo-production-api.vercel.app/message/:path*"
+    },
+    {
+      "source": "/post/:path*",
+      "destination": "https://nexo-production-api.vercel.app/post/:path*"
+    },
+    {
+      "source": "/story/:path*",
+      "destination": "https://nexo-production-api.vercel.app/story/:path*"
+    },
+    {
+      "source": "/notifications/:path*",
+      "destination": "https://nexo-production-api.vercel.app/notifications/:path*"
+    },
+    {
+      "source": "/p/:path*",
+      "destination": "https://nexo-production-api.vercel.app/p/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

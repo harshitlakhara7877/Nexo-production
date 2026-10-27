@@ -69,5 +69,5 @@ const PORT = process.env.PORT || 5000;
 await connectDB();
 
 server.listen(PORT, ()=>{
-  console.log(`server is running on https://localhost:${PORT}`)
+  console.log(`server is listening on port ${PORT}`)
 });

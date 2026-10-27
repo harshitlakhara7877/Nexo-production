@@ -16,6 +16,7 @@ out/
 
 # Local-only configuration and editor files
 *.local
+.vercel/
 .vscode/
 .idea/
 .DS_Store

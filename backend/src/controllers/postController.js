@@ -158,8 +158,8 @@ export const getPostPreview = async (req, res) => {
     }
 
     const clientOrigin =
-      process.env.CLIENT_ORIGIN ||
       process.env.PUBLIC_APP_URL ||
+      process.env.CLIENT_ORIGIN ||
       "http://localhost:5173";
     const postUrl = `${clientOrigin}/post/${post._id}`;
     const authorName =
